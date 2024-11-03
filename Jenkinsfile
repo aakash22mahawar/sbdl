@@ -11,10 +11,11 @@ pipeline {
             steps {
                 script {
                     // Initialize Conda and create the environment if it doesn't exist
-                    sh """
+                    sh '''
+                        #!/bin/bash
                         source ${CONDA_HOME}/etc/profile.d/conda.sh
                         conda env list | grep -q "^${CONDA_ENV} " || conda create -n ${CONDA_ENV} python=3.10.0 -y
-                    """
+                    '''
                 }
             }
         }
@@ -23,11 +24,12 @@ pipeline {
             steps {
                 script {
                     // Activate Conda environment and sync dependencies
-                    sh """
+                    sh '''
+                        #!/bin/bash
                         source ${CONDA_HOME}/etc/profile.d/conda.sh
                         conda activate ${CONDA_ENV}
                         conda install --file requirements.txt -y
-                    """
+                    '''
                 }
             }
         }
@@ -36,11 +38,12 @@ pipeline {
             steps {
                 script {
                     // Activate Conda environment and run tests
-                    sh """
+                    sh '''
+                        #!/bin/bash
                         source ${CONDA_HOME}/etc/profile.d/conda.sh
                         conda activate ${CONDA_ENV}
                         pytest
-                    """
+                    '''
                 }
             }
         }
@@ -67,9 +70,9 @@ pipeline {
             steps {
                 script {
                     // Transfer files to the QA environment
-                    sh """
+                    sh '''
                         scp -i /home/ubuntu/cred/aakash_jenkins.pem -o 'StrictHostKeyChecking no' -r sbdl.zip log4j.properties sbdl_main.py sbdl_submit.sh conf ubuntu@13.60.22.207:/home/ubuntu/sbdl-qa
-                    """
+                    '''
                 }
             }
         }
@@ -81,9 +84,9 @@ pipeline {
             steps {
                 script {
                     // Transfer files to the production environment
-                    sh """
-                         scp -i /home/ubuntu/cred/aakash_jenkins.pem -o 'StrictHostKeyChecking no' -r sbdl.zip log4j.properties sbdl_main.py sbdl_submit.sh conf ubuntu@13.60.22.207:/home/ubuntu/sbdl-prod
-                    """
+                    sh '''
+                        scp -i /home/ubuntu/cred/aakash_jenkins.pem -o 'StrictHostKeyChecking no' -r sbdl.zip log4j.properties sbdl_main.py sbdl_submit.sh conf ubuntu@13.60.22.207:/home/ubuntu/sbdl-prod
+                    '''
                 }
             }
         }
